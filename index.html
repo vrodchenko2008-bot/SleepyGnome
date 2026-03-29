@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Напій для коханої людини</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #ffdde1, #ee9ca7);
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: #fff;
+      padding: 25px 20px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      width: 95%;
+      max-width: 360px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 20px;
+      margin-bottom: 15px;
+    }
+
+    .field { margin-bottom: 10px; }
+
+    select, input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid #eee;
+      background: #f9f9f9;
+      font-size: 14px;
+      outline: none;
+      box-sizing: border-box;
+    }
+
+    .hidden { display: none; }
+
+    .choco-options {
+      display: flex;
+      gap: 10px;
+      margin: 10px 0;
+    }
+
+    .choco-btn {
+      flex: 1;
+      padding: 10px;
+      border-radius: 12px;
+      border: 1px solid #ddd;
+      background: #f3f3f3;
+      cursor: pointer;
+    }
+
+    .choco-btn.active {
+      background: #ff6a88;
+      color: white;
+      border: none;
+    }
+
+    button.main {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 15px;
+      background: #ccc;
+      color: white;
+      font-size: 16px;
+      margin-top: 15px;
+    }
+
+    button.main.active {
+      background: linear-gradient(135deg, #ff6a88, #ff3d68);
+      cursor: pointer;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 25px;
+      border-radius: 20px;
+      text-align: center;
+      width: 90%;
+      max-width: 320px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>☕ Давай я зроблю тобі щось смачненьке ❤️</h1>
+
+  <div class="field">
+    <select id="drink">
+      <option value="">Що ти хочеш? 😊</option>
+      <option value="tea">Хочу чай ☕</option>
+      <option value="cocoa">Хочу какао 🍫</option>
+    </select>
+  </div>
+
+  <div id="teaFields" class="hidden">
+    <div class="field">
+      <select id="type">
+        <option value="">Який чай ти любиш\?</option>
+        <option value="заварний">Заварний</option>
+        <option value="в пакетиках">У пакетиках</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <input type="number" id="sugar" placeholder="Скільки цукру тобі додати?" min="0">
+    </div>
+
+    <div class="field">
+      <input type="number" id="cups" placeholder="Скільки чашечок зробити?" min="1">
+    </div>
+  </div>
+
+  <div class="choco-options">
+    <div class="choco-btn" id="noChoco">Не хочу шоколад 🙈</div>
+    <div class="choco-btn" id="yesChoco">Хочу ще й шоколад 🍫</div>
+  </div>
+
+  <div class="field">
+    <input type="number" id="chocoCount" placeholder="Скільки шоколадок тобі взяти?" min="1" disabled>
+  </div>
+
+  <button class="main" id="orderBtn">Зробити для тебе 💖</button>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <h2>💖 Для коханої людини 💖</h2>
+    <p id="message"></p>
+  </div>
+</div>
+
+<script>
+  const drink = document.getElementById('drink');
+  const teaFields = document.getElementById('teaFields');
+  const type = document.getElementById('type');
+  const sugar = document.getElementById('sugar');
+  const cups = document.getElementById('cups');
+
+  const noChoco = document.getElementById('noChoco');
+  const yesChoco = document.getElementById('yesChoco');
+  const chocoCount = document.getElementById('chocoCount');
+  const btn = document.getElementById('orderBtn');
+
+  let chocoChoice = null;
+
+  drink.addEventListener('change', () => {
+    if (drink.value === 'tea') {
+      teaFields.classList.remove('hidden');
+    } else {
+      teaFields.classList.add('hidden');
+    }
+    checkFields();
+  });
+
+  function checkFields() {
+    let valid = drink.value && chocoChoice !== null;
+
+    if (drink.value === 'tea') {
+      valid = valid && type.value && sugar.value !== "" && cups.value !== "";
+    }
+
+    if (chocoChoice === 'yes') {
+      valid = valid && chocoCount.value !== "";
+    }
+
+    if (valid) {
+      btn.classList.add('active');
+      btn.disabled = false;
+    } else {
+      btn.classList.remove('active');
+      btn.disabled = true;
+    }
+  }
+
+  noChoco.onclick = () => {
+    chocoChoice = 'no';
+    noChoco.classList.add('active');
+    yesChoco.classList.remove('active');
+    chocoCount.disabled = true;
+    chocoCount.value = "";
+    checkFields();
+  };
+
+  yesChoco.onclick = () => {
+    chocoChoice = 'yes';
+    yesChoco.classList.add('active');
+    noChoco.classList.remove('active');
+    chocoCount.disabled = false;
+    checkFields();
+  };
+
+  type.addEventListener('change', checkFields);
+  sugar.addEventListener('input', checkFields);
+  cups.addEventListener('input', checkFields);
+  chocoCount.addEventListener('input', checkFields);
+
+  btn.addEventListener('click', () => {
+    if (!btn.disabled) {
+      let text = "";
+
+      if (drink.value === 'tea') {
+        text = "Я зробив для тебе чай, щоб тобі було тепло і затишно ☕❤️";
+      } else {
+        text = "Я зробив для тебе какао, щоб ти посміхнулась і зігрілась ☕❤️";
+      }
+
+      if (chocoChoice === 'yes') {
+        text += "\nІ, звісно, трохи солодкого для тебе 🍫💖";
+      }
+
+      document.getElementById('message').innerText = text;
+      document.getElementById('modal').style.display = 'flex';
+    }
+  });
+
+  window.addEventListener('click', (e) => {
+    if (e.target === document.getElementById('modal')) {
+      document.getElementById('modal').style.display = 'none';
+    }
+  });
+
+  btn.disabled = true;
+</script>
+
+</body>
+</html>
